@@ -10,7 +10,6 @@ db = SQLAlchemy(app)
 
 class Carritos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    idproducto = db.Column(db.Integer, nullable=False)
     preciototal = db.Column(db.Double, nullable=False)
     direccion = db.Column(db.String(200), nullable=False)
     fecha = db.Column(db.String(20), nullable=False)
@@ -18,14 +17,14 @@ class Carritos(db.Model):
 @app.route("/carritoLista", methods=["GET"])
 def obtener_carrito():
     carrito = Carritos.query.all()
-    carrito_json = [{"id": carro.id, "idproducto": carro.idproducto, "preciototal": carro.preciototal, "direccion" : carro.direccion, "fecha" : carro.fecha} for carro in carrito]
+    carrito_json = [{"id": carro.id, "preciototal": carro.preciototal, "direccion" : carro.direccion, "fecha" : carro.fecha} for carro in carrito]
     return jsonify(carrito_json)
 
 @app.route("/agregarCarrito", methods=["POST"])
 def agregar_carrito():
-    if not request.json or not 'idproducto' in request.json or not 'preciototal' in request.json or not 'direccion' in request.json or not 'fecha' in request.json:
+    if not request.json or not 'preciototal' in request.json or not 'direccion' in request.json or not 'fecha' in request.json:
         abort(400)
-    carrito = Carritos(idproducto=request.json['idproducto'], preciototal=request.json['preciototal'], direccion=request.json['direccion'], fecha=request.json['fehca'])
+    carrito = Carritos(preciototal=request.json['preciototal'], direccion=request.json['direccion'], fecha=request.json['fecha'])
     db.session.add(carrito)
     db.session.commit()
     return jsonify({'carrito': carrito.id}), 9
@@ -37,8 +36,6 @@ def editar_empleado(id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'idproducto' in request.json:
-        carrito.idproducto = request.json['idproducto']
     if 'preciototal' in request.json:
         carrito.preciototal = request.json['preciototal']
     if 'dirección' in request.json:
@@ -62,19 +59,19 @@ def borrar_carrito(id):
 #     carrito = Carritos.query.get(id)
 #     if carrito is None:
 #         abort(404)
-#     carrito_json = {"id": carrito.id, "idproducto": carrito.idproducto, "preciototal": carrito.preciototal, "direccion" : carrito.dirección, "fecha" : carrito.fecha}
+#     carrito_json = {"id": carrito.id, "preciototal": carrito.preciototal, "direccion" : carrito.dirección, "fecha" : carrito.fecha}
 #     return jsonify(carrito_json)
 
 @app.route("/carritoPorFecha/<string:fecha>", methods=["GET"])
 def obtener_carritos_por_fecha(fecha):
     carrito = Carritos.query.filter_by(fecha=fecha).all()
-    carritos_json = [{"id": cFecha.id, "idproducto": cFecha.idproducto, "preciototal": cFecha.preciototal, "direccion" : cFecha.dirección, "fecha" : cFecha.fecha} for cFecha in carrito]
+    carritos_json = [{"id": cFecha.id, "preciototal": cFecha.preciototal, "direccion" : cFecha.dirección, "fecha" : cFecha.fecha} for cFecha in carrito]
     return jsonify(carritos_json)
 
 @app.route("/carritoPorDireccion/<string:direccion>", methods=["GET"])
 def obtener_carritos_por_direccion(direccion):
     carrito = Carritos.query.filter_by(direccion=direccion).all()
-    carritos_json = [{"id": cDirec.id, "idproducto": cDirec.idproducto, "preciototal": cDirec.preciototal, "direccion" : cDirec.direccion, "fecha" : cDirec.fecha} for cDirec in carrito]
+    carritos_json = [{"id": cDirec.id, "preciototal": cDirec.preciototal, "direccion" : cDirec.direccion, "fecha" : cDirec.fecha} for cDirec in carrito]
     return jsonify(carritos_json)
 
 
